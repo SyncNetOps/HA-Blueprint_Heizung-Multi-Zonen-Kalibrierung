@@ -1,0 +1,406 @@
+## SyncNetOps:SNO_MZK:V1-160526
+blueprint:
+  name: "SNO- Heizung: Multi-Zonen Kalibrierung (v1.0)"
+  description: |
+    # 🌡️ SNO THERMOSTAT KALIBRIERUNG
+    Diese Automatisierung gleicht die Temperaturabweichung zwischen externen Raumsensoren und Heizkörper-Thermostaten dynamisch aus.
+    
+    ---
+    **Version:** 1.0.1 (SyncNetOps - Hotfix)
+
+    ### ✨ Features
+    * **Multi-Zone:** Bis zu 7 Heizzonen können zentral über eine Automatisierung verwaltet werden.
+    * **Batterieschonend:** Eine konfigurierbare Mindest-Abweichung (Toleranz) verhindert unnötig viele Funk-Befehle bei minimalen Temperaturschwankungen.
+    * **Sicher:** Die integrierte Cooldown-Sperre blockiert Feedback-Loops ("Aufschaukeln").
+    * **Fehlertolerant:** Boot-sichere Templates und hybride Trigger sorgen für absolute Stabilität.
+  domain: automation
+  
+  input:
+    # --- GLOBALE EINSTELLUNGEN ---
+    section_settings:
+      name: "⚙️ Globale Logik & Parameter"
+      icon: mdi:cog-outline
+      input:
+        cooldown_time:
+          name: Cooldown-Sperre (Minuten)
+          description: "Wartezeit nach einer Anpassung, bevor das Thermostat erneut kalibriert werden darf."
+          default: 10
+          selector:
+            number:
+              min: 1
+              max: 60
+              unit_of_measurement: min
+              mode: slider
+        min_delta:
+          name: Mindest-Abweichung (°C)
+          description: "Ab welcher Temperatur-Differenz soll der Offset geschrieben werden? (Empfehlung: 0.5°C)."
+          default: 0.5
+          selector:
+            number:
+              min: 0.1
+              max: 2.0
+              step: 0.1
+              unit_of_measurement: °C
+              mode: slider
+
+    # --- ZONE 1 (Obligatorisch) ---
+    section_zone1:
+      name: "1️⃣ Zone 1 (Obligatorisch)"
+      icon: mdi:numeric-1-box
+      input:
+        z1_name:
+          name: Bezeichnung der Zone
+          description: "Dient nur deiner Übersicht (z. B. Wohnzimmer)."
+          default: "Zone 1"
+          selector:
+            text: {}
+        z1_sensor:
+          name: Externer Temperatursensor
+          selector:
+            entity:
+              domain: sensor
+              device_class: temperature
+        z1_thermostat:
+          name: Thermostat (Climate)
+          selector:
+            entity:
+              domain: climate
+        z1_calib:
+          name: Kalibrierungs-Entität (Offset)
+          selector:
+            entity:
+              domain: 
+                - number
+                - input_number
+
+    # --- ZONE 2 (Optional) ---
+    section_zone2:
+      name: "2️⃣ Zone 2 (Optional)"
+      icon: mdi:numeric-2-box
+      collapsed: true
+      input:
+        z2_name:
+          name: Bezeichnung der Zone
+          default: "Zone 2"
+          selector:
+            text: {}
+        z2_sensor:
+          name: Externer Temperatursensor
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+              device_class: temperature
+        z2_thermostat:
+          name: Thermostat (Climate)
+          default: ""
+          selector:
+            entity:
+              domain: climate
+        z2_calib:
+          name: Kalibrierungs-Entität (Offset)
+          default: ""
+          selector:
+            entity:
+              domain: 
+                - number
+                - input_number
+
+    # --- ZONE 3 (Optional) ---
+    section_zone3:
+      name: "3️⃣ Zone 3 (Optional)"
+      icon: mdi:numeric-3-box
+      collapsed: true
+      input:
+        z3_name:
+          name: Bezeichnung der Zone
+          default: "Zone 3"
+          selector:
+            text: {}
+        z3_sensor:
+          name: Externer Temperatursensor
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+              device_class: temperature
+        z3_thermostat:
+          name: Thermostat (Climate)
+          default: ""
+          selector:
+            entity:
+              domain: climate
+        z3_calib:
+          name: Kalibrierungs-Entität (Offset)
+          default: ""
+          selector:
+            entity:
+              domain: 
+                - number
+                - input_number
+
+    # --- ZONE 4 (Optional) ---
+    section_zone4:
+      name: "4️⃣ Zone 4 (Optional)"
+      icon: mdi:numeric-4-box
+      collapsed: true
+      input:
+        z4_name:
+          name: Bezeichnung der Zone
+          default: "Zone 4"
+          selector:
+            text: {}
+        z4_sensor:
+          name: Externer Temperatursensor
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+              device_class: temperature
+        z4_thermostat:
+          name: Thermostat (Climate)
+          default: ""
+          selector:
+            entity:
+              domain: climate
+        z4_calib:
+          name: Kalibrierungs-Entität (Offset)
+          default: ""
+          selector:
+            entity:
+              domain: 
+                - number
+                - input_number
+
+    # --- ZONE 5 (Optional) ---
+    section_zone5:
+      name: "5️⃣ Zone 5 (Optional)"
+      icon: mdi:numeric-5-box
+      collapsed: true
+      input:
+        z5_name:
+          name: Bezeichnung der Zone
+          default: "Zone 5"
+          selector:
+            text: {}
+        z5_sensor:
+          name: Externer Temperatursensor
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+              device_class: temperature
+        z5_thermostat:
+          name: Thermostat (Climate)
+          default: ""
+          selector:
+            entity:
+              domain: climate
+        z5_calib:
+          name: Kalibrierungs-Entität (Offset)
+          default: ""
+          selector:
+            entity:
+              domain: 
+                - number
+                - input_number
+
+    # --- ZONE 6 (Optional) ---
+    section_zone6:
+      name: "6️⃣ Zone 6 (Optional)"
+      icon: mdi:numeric-6-box
+      collapsed: true
+      input:
+        z6_name:
+          name: Bezeichnung der Zone
+          default: "Zone 6"
+          selector:
+            text: {}
+        z6_sensor:
+          name: Externer Temperatursensor
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+              device_class: temperature
+        z6_thermostat:
+          name: Thermostat (Climate)
+          default: ""
+          selector:
+            entity:
+              domain: climate
+        z6_calib:
+          name: Kalibrierungs-Entität (Offset)
+          default: ""
+          selector:
+            entity:
+              domain: 
+                - number
+                - input_number
+
+    # --- ZONE 7 (Optional) ---
+    section_zone7:
+      name: "7️⃣ Zone 7 (Optional)"
+      icon: mdi:numeric-7-box
+      collapsed: true
+      input:
+        z7_name:
+          name: Bezeichnung der Zone
+          default: "Zone 7"
+          selector:
+            text: {}
+        z7_sensor:
+          name: Externer Temperatursensor
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+              device_class: temperature
+        z7_thermostat:
+          name: Thermostat (Climate)
+          default: ""
+          selector:
+            entity:
+              domain: climate
+        z7_calib:
+          name: Kalibrierungs-Entität (Offset)
+          default: ""
+          selector:
+            entity:
+              domain: 
+                - number
+                - input_number
+
+mode: single
+max_exceeded: silent
+
+trigger:
+  # Sofortige Auslösung bei primärer Zone 1
+  - platform: state
+    entity_id: !input z1_sensor
+  - platform: state
+    entity_id: !input z1_thermostat
+    attribute: current_temperature
+  # Hybrider Timer verarbeitet sicher alle konfigurierten Zonen alle 3 Minuten.
+  - platform: time_pattern
+    minutes: "/3"
+
+variables:
+  cooldown_minutes: !input cooldown_time
+  min_delta: !input min_delta
+  
+  # Entitäten Zuweisung
+  s1: !input z1_sensor
+  t1: !input z1_thermostat
+  c1: !input z1_calib
+  s2: !input z2_sensor
+  t2: !input z2_thermostat
+  c2: !input z2_calib
+  s3: !input z3_sensor
+  t3: !input z3_thermostat
+  c3: !input z3_calib
+  s4: !input z4_sensor
+  t4: !input z4_thermostat
+  c4: !input z4_calib
+  s5: !input z5_sensor
+  t5: !input z5_thermostat
+  c5: !input z5_calib
+  s6: !input z6_sensor
+  t6: !input z6_thermostat
+  c6: !input z6_calib
+  s7: !input z7_sensor
+  t7: !input z7_thermostat
+  c7: !input z7_calib
+  
+  # Dynamisches Array über alle 7 Zonen
+  zones:
+    - sensor: "{{ s1 }}"
+      thermostat: "{{ t1 }}"
+      calib: "{{ c1 }}"
+    - sensor: "{{ s2 }}"
+      thermostat: "{{ t2 }}"
+      calib: "{{ c2 }}"
+    - sensor: "{{ s3 }}"
+      thermostat: "{{ t3 }}"
+      calib: "{{ c3 }}"
+    - sensor: "{{ s4 }}"
+      thermostat: "{{ t4 }}"
+      calib: "{{ c4 }}"
+    - sensor: "{{ s5 }}"
+      thermostat: "{{ t5 }}"
+      calib: "{{ c5 }}"
+    - sensor: "{{ s6 }}"
+      thermostat: "{{ t6 }}"
+      calib: "{{ c6 }}"
+    - sensor: "{{ s7 }}"
+      thermostat: "{{ t7 }}"
+      calib: "{{ c7 }}"
+
+action:
+  - repeat:
+      for_each: "{{ zones }}"
+      sequence:
+        - choose:
+            - conditions:
+                # 1. Ist die Zone konfiguriert? (Überspringt leere Zonen sofort)
+                - condition: template
+                  value_template: "{{ repeat.item.sensor != '' and repeat.item.thermostat != '' and repeat.item.calib != '' }}"
+                
+                # 2. Sind die Entitäten aktuell verfügbar und haben gültige Werte?
+                - condition: template
+                  value_template: >
+                    {{ states(repeat.item.sensor) not in ['unknown', 'unavailable', 'None', ''] and 
+                       state_attr(repeat.item.thermostat, 'current_temperature') != None and
+                       states(repeat.item.calib) not in ['unknown', 'unavailable', 'None', ''] }}
+                
+                # 3. Cooldown-Check für die Ziel-Entität (Float Cast schützt vor String-Multiplikation)
+                - condition: template
+                  value_template: >
+                    {% set state_obj = states[repeat.item.calib] %}
+                    {% if state_obj and state_obj.last_updated %}
+                      {{ (now() - state_obj.last_updated).total_seconds() > (cooldown_minutes | float * 60) }}
+                    {% else %}
+                      true
+                    {% endif %}
+              
+              sequence:
+                - variables:
+                    s_ent: "{{ repeat.item.sensor }}"
+                    t_ent: "{{ repeat.item.thermostat }}"
+                    c_ent: "{{ repeat.item.calib }}"
+                    
+                    # Werte sicher auslesen
+                    real_temp: "{{ states(s_ent) | float(0) }}"
+                    trv_temp: "{{ state_attr(t_ent, 'current_temperature') | float(0) }}"
+                    current_offset: "{{ states(c_ent) | float(0) }}"
+                    
+                    diff: "{{ real_temp - trv_temp }}"
+                    raw_offset: "{{ (current_offset + diff) | round(1) }}"
+                    
+                    # Hardware-Limits des Thermostats auslesen und sauber parsen
+                    # >- streift Whitespaces ab, um String-Fehler in Folge-Templates zu verhindern
+                    new_offset: >-
+                      {%- set min_val = state_attr(c_ent, 'min') -%}
+                      {%- set max_val = state_attr(c_ent, 'max') -%}
+                      {%- set mn = min_val | float if min_val != None else -5.0 -%}
+                      {%- set mx = max_val | float if max_val != None else 5.0 -%}
+                      {%- set ro = raw_offset | float -%}
+                      {%- if ro > mx -%}
+                        {{ mx }}
+                      {%- elif ro < mn -%}
+                        {{ mn }}
+                      {%- else -%}
+                        {{ ro }}
+                      {%- endif -%}
+                
+                # 4. Mindest-Delta Check (Verhindert Mikroupdates)
+                # Strikter Float-Cast blockiert Jinja Typen-Fehler
+                - condition: template
+                  value_template: "{{ (new_offset | float - current_offset | float) | abs >= (min_delta | float) }}"
+                
+                # 5. Offset anwenden
+                - service: number.set_value
+                  target:
+                    entity_id: "{{ c_ent }}"
+                  data:
+                    value: "{{ new_offset | float }}"
